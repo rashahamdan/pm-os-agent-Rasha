@@ -15,7 +15,7 @@ A summary highlighting the status of the project, stories completed, stories in 
 ## Stop conditions
 
 - **Success**: When draft is created
-- **Stuck / give up**: No progress after 5 iterations
+- **Stuck / give up**: No progress after 3 iterations
 - **Escalate to human**: When reports needs to be sent or the issues or challenges are more than 5
 
 ## State
