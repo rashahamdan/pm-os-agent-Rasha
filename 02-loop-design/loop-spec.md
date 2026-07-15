@@ -1,50 +1,40 @@
-# Loop Spec: Cortex PM Chief-of-Staff Agent
+# Loop Spec: Cortex
 
-> Module 2 · Loop Engineering, ★ Deliverable 2
->
-> Your one-page blueprint for how the work you handed to the agent (M1) actually *runs*.
-> An agent is just a prompt that fires itself, this spec says when it fires, what "done" means, and what it needs to do the job. Living document; refine as the course progresses.
+## Trigger and loop type
 
-## 1. Trigger & loop type
+Heartbeat (cadence)
 
-**Chosen type:** _heartbeat · cron · hook · goal_
+## Why this loop type
 
-_Why this type? (e.g. a Monday-morning cron that assembles the weekly update, plus a hook on a new PRD to propose stories.)_
+Run it every 3 hours starting 9 am UK time till 6 pm UK time each work day (excluding Saturday, Sunday and public holidays)
 
-## 2. Goal / definition of done
+## Definition of done
 
-_What outcome is this loop responsible for? For a goal loop, what validation says "done"? (e.g. a status update grounded in real activity, queued for review, nothing posted.)_
+A summary highlighting the status of the project, stories completed, stories in the backlog, team velocity, success stories and challenges
 
-## 3. Stop conditions
+## Stop conditions
 
-| Condition | What it looks like | What happens |
-|---|---|---|
-| **Success** | _…_ | _…_ |
-| **Stuck / give up** | _…_ | _escalate / log / halt_ |
-| **Escalate to human** | _…_ | _HITL checkpoint (from agent-line-map)_ |
+- **Success**: When draft is created
+- **Stuck / give up**: No progress after 5 iterations
+- **Escalate to human**: When reports needs to be sent or the issues or challenges are more than 5
 
-## 4. State
+## State
 
-_What persists across iterations, and what's the scope? (e.g. per-project context and last week's update; no cross-project confidential leakage.)_
+Handled tasks, sprint backlog, project A
 
-## 5. The five things every loop needs
+## The five components
 
-| Component | For Cortex |
-|---|---|
-| **Work tree** (isolated workspace per run) | _…_ |
-| **Skills** (reusable capabilities) | _…_ |
-| **Plugins / connectors** (tools & access) | _…_ |
-| **Subagents** (delegated / validation) | _placeholder → M3 orchestration-map.md_ |
-| **State tracking** | _…_ |
+- **Work tree**: Keep it for each project - so use it for single JIRA instance
+- **Skills**: get-status-update, get-summary
+- **Plugins / connectors**: JIRA, Monday.com, emails (outlook), teams group chat
+- **Subagents**: Norms-check, character count, tone check
+- **State tracking**: Handled tasks, sprint backlog, project A
 
-## 6. Context plan
+## Context plan
 
-_What context is written / selected / compressed / isolated each iteration? (Full depth in M4.)_
+Write and compress
 
-## 7. Hand-off to bounds & evals
+## Hand-off to bounds and evals (M5)
 
-_Placeholder → M5 `bounds-and-evals.md`: max iterations, timeout, budget, queue cap, kill switch._
+Never exceed $1 and never run more than 3 iterations
 
-## Link to live loop
-
-_[path to your agent in `00-build/`]_
