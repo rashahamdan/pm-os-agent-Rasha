@@ -8,6 +8,8 @@ Heartbeat (cadence)
 
 Run it every 3 hours starting 9 am UK time till 6 pm UK time each work day (excluding Saturday, Sunday and public holidays)
 
+The heartbeat *wakes* Cortex on this cadence to check for inbound PM tasks; each task it finds then runs to completion (draft → propose → stop for PM review) before the loop idles until the next beat.
+
 ## Definition of done
 
 A summary highlighting the status of the project, stories completed, stories in the backlog, team velocity, success stories and challenges
