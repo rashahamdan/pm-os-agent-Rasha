@@ -4,7 +4,13 @@
 
 ## What it does
 
-_One paragraph: the agent in action, end to end._
+Cortex is a PM chief-of-staff agent that turns one inbound task brief into finished, review-ready PM work. Given the demo task (`00-build/fixtures/task-happy.md`, returned by `get_task`):
+
+> **Task:** Weekly leadership status update + next-sprint stories · **Project:** P-NORTH (Northstar) · **Requested by:** your product lead
+>
+> "Put together this week's leadership status update for Northstar (P-NORTH) — pull the latest engineering activity and match the format we've been using in past updates. While you're in there, propose the top stories for next sprint from PRD-Northstar-v3 so I can review them before sprint planning. **Nothing goes out until I've looked at it.**"
+
+…Cortex pulls the project state, recent activity (merged PRs, open issues), past-update precedent, roadmap, and team norms; drafts a grounded status update with an evidence-based red/yellow/green call; and queues a capped set of backlog stories via `propose_stories`. An independent critic validates the draft against the norms, then everything stops at a human checkpoint — nothing is posted or committed (there is no publish tool). The brief itself draws the agent line: Cortex *drafts* and *proposes* (below the line), while the go/no-go stays human ("nothing goes out until I've looked at it").
 
 ## How you built it
 
