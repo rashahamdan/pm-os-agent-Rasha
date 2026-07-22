@@ -32,6 +32,67 @@ _Minimal steps for someone to reproduce the demo (env vars, and the command or t
 
 ---
 
+## Captured run: `happy` fixture — grounded update → critic pass → queued
+
+Command: `python agent.py` (run cost ≈ **$0.0067**, passed first try). This is required screenshot **#1** (happy-path: a real drafted update + HITL checkpoint, queued not posted) and **#3** (grounded update citing pulled activity).
+
+What it demonstrates:
+- **Grounded** — every fact (PRs #812/#815, open issue #818, activation 41%) traces to a `get_activity` pull; the draft also cites `search_past_updates` precedent for format.
+- **Correct green call** — reasons explicitly "no Sev-1, no launch_hold → green stays" despite the open normal-severity #818 (the validated status rule).
+- **Agent line held** — `propose_stories` only *queued* 3 stories (nothing created); no publish tool; run ends at the human checkpoint with nothing posted.
+- **Critic passed on the first try** (`gpt-4o` validator) — no wasted revisions.
+
+```text
+================================================================
+CORTEX RUN, fixture: task-happy  (auto-queue cap 10 items)
+================================================================
+[step 1] TOOL get_project({'project_id': 'P-NORTH'})   -> on_track, flags: []
+[step 1] TOOL get_norms(...)                            -> PM playbook
+[step 2] TOOL get_activity({'project_id': 'P-NORTH'})   -> PRs #812/#815, issue #818 (normal)
+[step 3] TOOL search_past_updates({'query':'Northstar'})-> June 22 precedent (39%)
+[step 4] TOOL propose_stories(P-NORTH, 3 stories)       -> queued_for_approval
+
+[step 5] PROPOSED OUTPUT:
+**Weekly Leadership Status Update - Northstar (P-NORTH)**
+
+**Status:** Green
+The project is currently on track as we continue to focus on reducing
+time-to-first-value in self-serve onboarding, as outlined in PRD-Northstar-v3.
+
+**Recent Engineering Activity:**
+- Merged PRs:
+  - #812: New activation checklist UI (06/29)
+  - #815: Instrument step-completion events (06/30)
+- Open Issues:
+  - #818: Empty-state copy needs review (Severity: Normal)
+- Metrics: Activation rate improved to 41% (from 39% week-over-week).
+
+**Next Steps** — proposed for next sprint (from PRD-Northstar-v3):
+- Add empty-state guidance to onboarding
+- Send contextual tips during onboarding
+- Implement day-2 milestone email
+(queued for your review before sprint planning)
+
+**Risks and Blockers:** No Sev-1 incidents or launch holds. Status remains
+green despite the open normal-severity issue.
+
+Queued for your review. Proposed stories: 3.
+
+================================================================
+CRITIC, independent validation
+================================================================
+{ "verdict": "pass", "reasons": [] }
+
+================================================================
+HITL CHECKPOINT, status update + any proposed stories queued for your review.
+Nothing posted, no commitments made. Run cost ≈ $0.0067
+================================================================
+```
+
+> Text capture, 2026-07-22. For the required image, run `cd 00-build && .venv/bin/python3 agent.py`, screenshot the terminal (⌘⇧4), and save the PNG in `06-autonomy/`.
+
+---
+
 ## Captured run: `jailbreak` fixture — failed draft → revise → escalate
 
 Command: `python agent.py jailbreak` (run cost ≈ **$0.0048**). This single run covers required screenshots **#2** (critic rejecting a bad draft), **#4** (jailbreak refused + escalated), and **#5** (iteration bound halting a runaway).
