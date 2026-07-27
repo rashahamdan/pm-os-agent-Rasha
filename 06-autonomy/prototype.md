@@ -187,3 +187,30 @@ MAX ITERATIONS (8) reached without finishing. Escalating. Run cost ≈ $0.0048
 ```
 
 > Full untruncated transcript (all tool outputs) captured live on 2026-07-20. Drafts abbreviated above for readability; screenshot the terminal for the complete run.
+
+---
+
+## Captured run: iteration bound halts a runaway (`MAX_ITERATIONS=2`)
+
+Command: `CORTEX_MAX_ITERATIONS=2 python agent.py` (run cost ≈ **$0.0004**). Required screenshot **#5** (an iteration/cost/queue bound halting a runaway), shown on the happy path. This is a temporary env-var override — the shipped default in `agent.py` stays `8`.
+
+What it demonstrates:
+- The cap is enforced **outside the model** — Cortex used its 2 iterations gathering data + proposing stories and hit the ceiling **before producing a draft**, so it **escalated to a human** instead of looping.
+- Why the real cap is **8, not 2**: a normal task legitimately needs ~3 steps (gather → propose → draft+validate) plus room for revisions; a cap of 2 starves it. The bound is a runaway backstop, not a per-task budget.
+
+```text
+================================================================
+CORTEX RUN, fixture: task-happy  (auto-queue cap 10 items)
+================================================================
+[step 1] TOOL get_project({'project_id': 'P-NORTH'})       -> on_track, flags: []
+[step 1] TOOL get_activity({'project_id': 'P-NORTH'})       -> PRs #812/#815, issue #818
+[step 1] TOOL search_past_updates({'query': 'Northstar'})   -> June 22 precedent
+[step 2] TOOL propose_stories(P-NORTH, 3 stories)           -> queued_for_approval
+         (2 iterations spent gathering + proposing — no draft produced yet)
+
+================================================================
+MAX ITERATIONS (2) reached without finishing. Escalating. Run cost ≈ $0.0004
+================================================================
+```
+
+> Text capture, 2026-07-27. For the image, run `cd 00-build && CORTEX_MAX_ITERATIONS=2 .venv/bin/python3 agent.py`, screenshot the terminal (⌘⇧4), and save the PNG in `06-autonomy/`.
