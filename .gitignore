@@ -20,3 +20,7 @@ __pycache__/
 *.local.json
 /traces/
 /runs/
+
+# Kill-switch sentinel (touched at runtime to halt a run; never commit it)
+KILL_SWITCH
+**/KILL_SWITCH

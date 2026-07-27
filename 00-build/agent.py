@@ -24,6 +24,8 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
+from pathlib import Path
 
 from openai import OpenAI
 
@@ -54,6 +56,18 @@ PRICE_OUT = float(os.environ.get("CORTEX_PRICE_OUT_PER_M", "0.60"))
 # Critic pricing (defaults match gpt-4o) so the cost readout stays accurate.
 CRITIC_PRICE_IN = float(os.environ.get("CORTEX_CRITIC_PRICE_IN_PER_M", "2.50"))
 CRITIC_PRICE_OUT = float(os.environ.get("CORTEX_CRITIC_PRICE_OUT_PER_M", "10.00"))
+# Timeout bound: a wall-clock cap per run, plus a per-request cap so one hung
+# model call can't freeze the loop. Enforced OUTSIDE the model.
+MAX_RUN_SECONDS = float(os.environ.get("CORTEX_TIMEOUT_S", "90"))
+REQUEST_TIMEOUT_S = float(os.environ.get("CORTEX_REQUEST_TIMEOUT_S", "30"))
+# JIT / ephemeral permission: propose_stories has NO standing access. A single-
+# use grant is minted per run (if authorized) and CONSUMED on first use, so a
+# second propose in the same run, or a run with the grant withheld
+# (CORTEX_GRANT_PROPOSE=0), is denied and must escalate.
+GRANT_PROPOSE = os.environ.get("CORTEX_GRANT_PROPOSE", "1") == "1"
+# Kill switch: touch this file to halt the run at the next step. Rollback is a
+# no-op because Cortex commits nothing (no publish tool).
+KILL_SWITCH = Path(__file__).parent / "KILL_SWITCH"
 
 TOOL_SCHEMAS = [
     {"type": "function", "function": {
@@ -103,6 +117,22 @@ class Bounds:
         return self.cost >= COST_CAP_USD
 
 
+class Permissions:
+    """JIT / ephemeral tool grants, enforced OUTSIDE the model. Read tools are
+    always allowed; propose_stories has NO standing permission. A single-use
+    grant is minted per run (if authorized) and CONSUMED on first use, so a
+    second propose in the same run is denied and Cortex must escalate."""
+
+    def __init__(self, single_use_grants):
+        self._grants = set(single_use_grants)
+
+    def use(self, tool: str) -> bool:
+        if tool in self._grants:
+            self._grants.discard(tool)  # ephemeral: consumed on use
+            return True
+        return False
+
+
 def banner(text: str) -> None:
     print(f"\n{'=' * 64}\n{text}\n{'=' * 64}")
 
@@ -110,6 +140,8 @@ def banner(text: str) -> None:
 def run(which: str = "happy") -> None:
     client = OpenAI()
     bounds = Bounds()
+    # JIT: mint a single-use propose grant for this run (unless withheld).
+    perms = Permissions({"propose_stories"} if GRANT_PROPOSE else set())
     task = tools.get_task(which)
     if "error" in task:
         print(task)
@@ -124,15 +156,28 @@ def run(which: str = "happy") -> None:
     ]
     source_log: list[str] = [task["body"]]
     revisions = 0
+    start = time.monotonic()
 
     for step in range(1, MAX_ITERATIONS + 1):
+        if KILL_SWITCH.exists():
+            banner(f"KILL SWITCH tripped ({KILL_SWITCH.name} present). Halting. "
+                   f"Rollback is a no-op, Cortex committed nothing. "
+                   f"Run cost ≈ ${bounds.cost:.4f}")
+            return
+        elapsed = time.monotonic() - start
+        if elapsed > MAX_RUN_SECONDS:
+            banner(f"TIMEOUT, run exceeded {MAX_RUN_SECONDS:.0f}s "
+                   f"({elapsed:.0f}s). Halting and escalating to a human. "
+                   f"Run cost ≈ ${bounds.cost:.4f}")
+            return
         if bounds.over_cap():
             banner(f"BOUND TRIPPED, cost cap ${COST_CAP_USD} hit at "
                    f"${bounds.cost:.4f}. Halting and escalating to a human.")
             return
 
         resp = client.chat.completions.create(
-            model=MODEL, messages=messages, tools=TOOL_SCHEMAS)
+            model=MODEL, messages=messages, tools=TOOL_SCHEMAS,
+            timeout=REQUEST_TIMEOUT_S)
         bounds.add(resp.usage)
         msg = resp.choices[0].message
 
@@ -141,7 +186,14 @@ def run(which: str = "happy") -> None:
             for call in msg.tool_calls:
                 fn = call.function.name
                 args = json.loads(call.function.arguments or "{}")
-                result = tools.TOOLS[fn](**args)
+                # JIT permission check: propose_stories needs a single-use grant.
+                if fn == "propose_stories" and not perms.use("propose_stories"):
+                    result = {"status": "denied", "error": "no_active_grant",
+                              "detail": "propose_stories requires a single-use "
+                              "JIT grant; none active (already used this run, or "
+                              "withheld). Do not retry, escalate to a human."}
+                else:
+                    result = tools.TOOLS[fn](**args)
                 source_log.append(f"{fn}({args}) -> {json.dumps(result)}")
                 print(f"\n[step {step}] TOOL {fn}({args})")
                 print(f"          -> {json.dumps(result)[:300]}")
