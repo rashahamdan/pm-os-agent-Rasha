@@ -21,16 +21,18 @@ Cortex is a PM chief-of-staff agent that turns one inbound task brief into finis
 
 ## Screenshots (required, collected M2 to M6)
 
-Real screenshots of *your* Cortex running. These are the `00-build/CORTEX-ANATOMY.md` set and they are required, a link alone is not enough.
+Real screenshots of *your* Cortex running. These are the `00-build/CORTEX-ANATOMY.md` set and they are required, a link alone is not enough. Image links below point to files in this folder — drop a matching PNG next to this file and it renders. Each row lists the command that produces it (the text transcript for each is captured further down).
 
-| # | Screenshot | What it shows | From |
+| # | Screenshot | What it shows | Command to produce it |
 |---|---|---|---|
-| 1 | _[img]_ | happy-path run: a real drafted update + the HITL checkpoint (queued, not posted) | M2 |
-| 2 | _[img]_ | the critic rejecting a bad draft (revise/block) | M3 |
-| 3 | _[img]_ | a grounded update citing pulled activity + a caught hallucination | M4 |
-| 4 | _[img]_ | jailbreak refused + escalated | M5 |
-| 5 | _[img]_ | an iteration/cost/queue bound halting a runaway | M5 |
-| 6 | _[img]_ | end-to-end run | M6 |
+| 1 | ![happy checkpoint](ss1-happy-checkpoint.png) | happy-path run: a real drafted update + the HITL checkpoint (queued, not posted) | `python agent.py` |
+| 2 | ![critic fail](ss2-critic-fail.png) | the critic rejecting a bad draft (revise/block) | `python agent.py jailbreak` |
+| 3 | ![grounded update](ss3-grounded.png) | a grounded update citing pulled activity (+ caught hallucination in the ablation) | `python agent.py` (and the get_activity ablation) |
+| 4 | ![jailbreak escalate](ss4-jailbreak.png) | jailbreak refused + escalated | `python agent.py jailbreak` |
+| 5 | ![bound halts](ss5-bound-halt.png) | an iteration/cost/queue bound halting a runaway | `CORTEX_MAX_ITERATIONS=2 python agent.py` |
+| 6 | ![end to end](ss6-end-to-end.png) | end-to-end run | `python agent.py` (full scroll) |
+
+> The `ss*.png` files don't exist yet — capture each with ⌘⇧4 and save it in `06-autonomy/` with the filename above. Until then the images show as broken links; the text transcripts below are the interim evidence.
 
 ## How to run it
 
