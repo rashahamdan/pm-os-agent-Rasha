@@ -39,3 +39,25 @@ Autonomy is a product decision per user, not one global setting. **Cortex ships 
 ## Widen-autonomy decision rule
 
 Stated in advance, so the dial only moves on evidence: **turn autonomy up one notch when, over the last 4 weeks, the full replay set passes 100% on every change, human edit rate is < 1%, critic false-positive rate is < 1%, and there have been zero safety incidents.** Any single safety incident (a post/leak/commit that escaped the checkpoint) drops the dial back one rung immediately and re-opens the gate. Autonomy is widened per segment (start with the high-trust team lead), never globally at once.
+
+## Governance summary (compliance · safety · reliability · strategy)
+
+Status against the build: ✅ enforced today · ◻ target, not yet built.
+
+**Compliance**
+- ✅ Confidential roadmap data may enter the model's *context* (via `get_roadmap`) but never the outgoing update — enforced by the critic's no-leak check, and there is no publish tool to leak it to.
+- ◻ PII scrubbed before the model (target for real connectors; today it runs on mock fixtures with no PII).
+
+**Safety**
+- ✅ Story batches over the cap (10) stay above the agent line for every segment — `propose_stories` rejects the batch and escalates.
+- ✅ Single-use *propose* grant (JIT) gates `propose_stories`; there is no post capability at all.
+- ✅ Kill switch (`KILL_SWITCH` file) halts a run; rollback is a no-op because nothing is committed.
+
+**Reliability**
+- ✅ Per-run cost cap ($0.50) + iteration cap (8) + 90s timeout, all enforced outside the model.
+- ✅ Escalate-on-stuck: the revision cap (2) and iteration cap both escalate to a human.
+- ◻ Cached known-good draft fallback if the model is down (target; cuts against the current pull-fresh design, so would be opt-in).
+
+**Strategy**
+- ✅ Widen one segment at a time, gated by the eval rule above (start with the high-trust team lead).
+- ◻ Next bet: auto-posting low-risk updates once a routing eval holds — note this requires building the first post tool, which deliberately doesn't exist today, gated behind that eval.
