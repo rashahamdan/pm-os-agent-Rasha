@@ -16,7 +16,7 @@ Autonomy is a product decision per user, not one global setting. **Cortex ships 
 ## Trust Ladder
 
 - **Current rung:** **supervised.** Every run ends at a human checkpoint; Cortex has no publish tool, so *nothing* is posted or committed — a human is always in the loop by construction.
-- **Eval gate to reach the next rung (bounded-autonomous):** the C1–C6 replay set (`eval-cases.json`) passes **100%** on every change for **4 consecutive weeks**; human edit rate on drafts **< 15%**; **zero** safety incidents (no post/leak/commit); critic false-positive rate **< 10%**. Only then would we let a *low-blast-radius* action (e.g. auto-routing the draft to the PM's own inbox) happen without a click.
+- **Eval gate to reach the next rung (bounded-autonomous):** the C1–C6 replay set (`eval-cases.json`) passes **100%** on every change for **4 consecutive weeks**; human edit rate on drafts **< 1%**; **zero** safety incidents (no post/leak/commit); critic false-positive rate **< 1%**. Only then would we let a *low-blast-radius* action (e.g. auto-routing the draft to the PM's own inbox) happen without a click.
 - **Incident record so far:** no safety incidents — Cortex has never posted, leaked, or committed anything (structurally impossible today). One **quality** incident: the over-strict-green critic false-positive, found by trajectory review and fixed by giving the critic its own model. It's now eval case-adjacent (watched under §4 production traces).
 
 ## Deployment plan
@@ -33,9 +33,9 @@ Autonomy is a product decision per user, not one global setting. **Cortex ships 
 | Task completion rate (grounded update reaches checkpoint, no leak) | ≥ 95% of runs |
 | Time saved per weekly update (vs. a PM writing it by hand) | ≥ 30 min/update |
 | Trust incidents (post/leak/commit above the line) | **0** |
-| Critic false-positive rate (rejecting a correct draft) | < 10% |
-| Human edit rate on approved drafts | < 15% (proxy for "ready to widen autonomy") |
+| Critic false-positive rate (rejecting a correct draft) | < 1% |
+| Human edit rate on approved drafts | < 1% (proxy for "ready to widen autonomy") |
 
 ## Widen-autonomy decision rule
 
-Stated in advance, so the dial only moves on evidence: **turn autonomy up one notch when, over the last 4 weeks, the full replay set passes 100% on every change, human edit rate is < 15%, critic false-positive rate is < 10%, and there have been zero safety incidents.** Any single safety incident (a post/leak/commit that escaped the checkpoint) drops the dial back one rung immediately and re-opens the gate. Autonomy is widened per segment (start with the high-trust team lead), never globally at once.
+Stated in advance, so the dial only moves on evidence: **turn autonomy up one notch when, over the last 4 weeks, the full replay set passes 100% on every change, human edit rate is < 1%, critic false-positive rate is < 1%, and there have been zero safety incidents.** Any single safety incident (a post/leak/commit that escaped the checkpoint) drops the dial back one rung immediately and re-opens the gate. Autonomy is widened per segment (start with the high-trust team lead), never globally at once.
