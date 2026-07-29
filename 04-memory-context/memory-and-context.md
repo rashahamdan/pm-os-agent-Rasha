@@ -4,7 +4,14 @@
 
 ## 1. Context budget
 
-_What does each loop iteration actually receive, and why? (You can't fit everything, what's the priority order?)_
+Each iteration receives the growing message list: the system prompt + the task brief + every tool call and its result so far (the `source_log`). Cortex doesn't get "everything about the org" — it *pulls* what a step needs. Priority order for what earns a place in context:
+
+1. **System prompt (`CORTEX_SYSTEM`)** — always in; defines the agent line and how to finish. Non-negotiable.
+2. **The task brief** — always in; it's the whole job (long-context, bounded).
+3. **Tool results already pulled this run** — kept so the model can reason over the evidence and the critic can check grounding against it.
+4. **Just-retrieved slices** — the specific project, activity, applicable norm, shareable roadmap slice, and comparable precedent — pulled on demand, not preloaded.
+
+What's deliberately **excluded**: other projects' data, the full past-update history, the whole playbook every turn, and any embargoed roadmap content that isn't shareable. The budget stays small because the loop is one task over a handful of targeted reads — the priority rule is *"retrieve the narrowest slice that answers this step, keep the evidence, drop everything else."*
 
 ## 2. Retrieve vs. long-context: per source
 

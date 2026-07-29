@@ -8,12 +8,14 @@ List every discrete decision or action in your agent's workflow, then score each
 
 | Decision / action | Reversibility (H/M/L) | Blast radius (H/M/L) | Measurability (H/M/L) | Above / Below | HITL? |
 |---|---|---|---|---|---|
-| _Pull project state + recent GitHub/Jira activity_ | H | L | H | Below | · |
-| _Draft the weekly leadership status update_ | H | M | M | Below | spot-check |
-| _Propose next sprint's stories from the PRD (within cap)_ | M | M | M | Below | spot-check |
-| _Post the update to a channel / commit a ship date_ | L | H | M | Above | required |
-| _Mark a launch gate green / merge or close a ticket_ | L | H | M | Above | required |
-| _…_ | | | | | |
+| Pull project state, activity, past updates, roadmap, norms (`get_*`) | H | L | H | Below | · |
+| Make the red/yellow/green call from the evidence | H | M | M | Below | critic-checked |
+| Draft the weekly leadership status update | H | M | M | Below | critic + checkpoint |
+| Propose next sprint's stories from the PRD (≤10 via `propose_stories`) | M | M | M | Below | critic + checkpoint |
+| Decide when data is missing / ambiguous → escalate | H | L | H | Below | · |
+| Post/publish/send the update to any channel | L | H | M | Above | required (no tool exists) |
+| Commit a ship/GA date or mark a launch gate | L | H | M | Above | required (no tool exists) |
+| Create / close / merge a ticket or PR | L | H | M | Above | required (no tool exists) |
 
 ## The agent line, codified (from team norms)
 
@@ -32,17 +34,23 @@ The independent critic checks every draft against exactly these rules before it 
 
 ## Agent anatomy (sketch)
 
-- **Model:** _your default fast model + when you escalate to a frontier model, and why_
-- **Tools:** _project + activity lookup (read) · past-update search · roadmap · team norms · story proposal (capped) …_
-- **Memory:** _what persists across runs (roadmap, decisions, norms) vs. purged_
-- **Loop:** _placeholder, defined in M2 loop-spec.md_
-- **Bounds:** _placeholder, defined in M5 bounds-and-evals.md_
-- **Evals:** _placeholder, defined in M5 bounds-and-evals.md_
+- **Model:** fast default (`gpt-4o-mini`) for the drafter; the **critic escalates to a frontier model** (`gpt-4o`) because validation is a subtle judgment the small model applies inconsistently (see M6 build-insights).
+- **Tools:** read-only — `get_project` · `get_activity` · `search_past_updates` · `get_roadmap` · `get_norms`; plus `propose_stories` (queue-only, capped at 10). **Deliberately absent:** any post/merge/commit/close tool — the agent line is enforced by tool *absence*.
+- **Memory:** semantic (norms, roadmap, project registry) and episodic (past updates/decisions) are **retrieved fresh** each run, not carried; working memory (source log, counters) is **purged** at run end — near-stateless by design.
+- **Loop:** defined in M2 `loop-spec.md` (heartbeat → read → draft → critic → HITL).
+- **Bounds:** defined in M5 `bounds-and-evals.md` (8 iters, 2 revisions, $0.50, 10-story cap, 90s timeout, JIT grant, kill switch).
+- **Evals:** defined in M5 `bounds-and-evals.md` (C1–C6 replay set + `evals.py`).
 
 ## The golden rule, applied
 
-_One sentence per above-the-line decision: why it stays human (which of reversibility / blast radius / measurability failed)._
+One line per above-the-line decision — which of reversibility / blast radius / measurability fails:
+
+- **Post/publish an update** → stays human: **low reversibility** (you can't un-send a company-wide message) + **high blast radius** (wrong info reaches everyone at once).
+- **Commit a ship/GA date or mark a launch gate** → stays human: **low reversibility** (a committed date sets external expectations) + **high blast radius** (drives downstream teams) + **low measurability** (the agent can't verify readiness).
+- **Create/close/merge a ticket or PR** → stays human: **low reversibility** (changes real tracker/repo state) + **high blast radius** (alters what engineering does).
+
+The pattern: everything above the line fails on **reversibility × blast radius** — irreversible, wide-reach actions. Below-the-line work (read, draft, propose) is all high-reversibility and low blast radius, so the agent owns it.
 
 ## Hardest call
 
-_Your toughest "above vs below" decision and how you resolved it. (Share this in `#cohort-channel`.)_
+**Proposing backlog stories.** It sits right on the line: it's *drafting-like* (a proposal a human reviews), but it's also the one action that touches a real system of record if it ever created tickets. I resolved it by **splitting the verb**: Cortex may *propose* (queue a request, reversible, capped at 10, creates nothing), but *creating* the tickets stays above the line. The `propose_stories` tool returns `queued_for_approval` and writes nothing to the tracker — so the risky half (committing work) is removed at the infrastructure level, and only the safe half (suggesting work) is delegated.
