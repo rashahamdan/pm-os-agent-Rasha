@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cortex — PM Chief-of-Staff Agent</title>
+<style>
+  :root{
+    --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --bg:#ffffff;
+    --accent:#2563eb; --accent-soft:#eff6ff; --good:#059669; --bad:#dc2626;
+    --code:#0f172a; --code-bg:#f1f5f9;
+    --maxw:960px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#0b1220;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .deck{position:relative}
+  .slide{
+    display:none; min-height:100vh; padding:6vh 7vw; background:var(--bg);
+    flex-direction:column; justify-content:center;
+  }
+  .slide.active{display:flex}
+  .slide .inner{max-width:var(--maxw); margin:0 auto; width:100%}
+  h1{font-size:3rem; line-height:1.1; margin:0 0 .4em; letter-spacing:-.02em}
+  h2{font-size:2rem; line-height:1.15; margin:0 0 .7em; letter-spacing:-.01em;
+     border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:.15em}
+  p.lead{font-size:1.35rem; color:var(--ink); line-height:1.5; margin:.2em 0}
+  p.sub{font-size:1.05rem; color:var(--muted); margin:.2em 0}
+  ul{font-size:1.2rem; line-height:1.6; padding-left:1.1em; margin:.3em 0}
+  li{margin:.35em 0}
+  li b{color:var(--ink)}
+  .kicker{color:var(--accent); font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; font-size:.8rem; margin-bottom:1em}
+  table{border-collapse:collapse; width:100%; font-size:1.05rem; margin:.4em 0}
+  th,td{border:1px solid var(--line); padding:.55em .7em; text-align:left; vertical-align:top}
+  th{background:var(--accent-soft); color:var(--ink)}
+  .good{color:var(--good); font-weight:700}
+  .bad{color:var(--bad); font-weight:700}
+  pre{background:var(--code-bg); color:var(--code); padding:1em 1.2em; border-radius:10px;
+    font-size:.95rem; line-height:1.5; overflow:auto; border:1px solid var(--line)}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace}
+  .shot{max-width:100%; max-height:52vh; border:1px solid var(--line); border-radius:8px;
+    box-shadow:0 6px 24px rgba(0,0,0,.12); margin-top:.6em}
+  .two{display:flex; gap:1.2em; flex-wrap:wrap}
+  .two>div{flex:1; min-width:260px}
+  .tag{display:inline-block; background:var(--accent-soft); color:var(--accent);
+    border-radius:999px; padding:.15em .7em; font-size:.85rem; font-weight:600; margin:.15em .2em 0 0}
+  .title-slide{background:linear-gradient(135deg,#111827 0%,#1e3a8a 100%); color:#fff}
+  .title-slide h1{color:#fff}
+  .title-slide p.lead{color:#dbeafe}
+  .title-slide p.sub{color:#93c5fd}
+  .title-slide .kicker{color:#93c5fd}
+  .footer{position:fixed; bottom:14px; right:18px; font-size:.8rem; color:#94a3b8; z-index:10}
+  .nav{position:fixed; bottom:14px; left:18px; font-size:.8rem; color:#94a3b8; z-index:10}
+  .hint{position:fixed; top:14px; right:18px; font-size:.75rem; color:#94a3b8; z-index:10}
+  @media print{
+    html,body{background:#fff}
+    .slide{display:flex !important; min-height:auto; page-break-after:always; padding:5vh 6vw}
+    .footer,.nav,.hint{display:none}
+    .shot{max-height:none}
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide active title-slide">
+    <div class="inner">
+      <div class="kicker">Product School · Run Your AI Agent Team — Capstone</div>
+      <h1>Cortex</h1>
+      <p class="lead">A PM chief-of-staff agent that turns one inbound task into a grounded, leadership-ready status update and a proposed backlog — checked by an independent critic, always stopped at a human checkpoint.</p>
+      <p class="sub">Rasha Hamdan</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The problem</div>
+      <h2>Status updates are repetitive but high-stakes</h2>
+      <ul>
+        <li>PMs lose hours each week assembling leadership status updates by hand.</li>
+        <li>The work is repetitive — but a wrong metric, a leaked roadmap, or a committed date has real <b>blast radius</b>.</li>
+        <li>A good fit for an agent — <b>if</b> it's bounded so it can draft without ever acting on its own.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">The agent in one sentence</div>
+      <h2>What Cortex does</h2>
+      <p class="lead">Given a task like "write this week's leadership update," Cortex pulls the real project data (PRs, issues, past updates, roadmap, norms), drafts a grounded status update with an honest red/yellow/green call, and proposes a capped set of next-sprint stories — then stops for human review.</p>
+      <p class="sub">By design it can <b>draft</b> and <b>propose</b>, never <b>act</b>.</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M1 · The agent line</div>
+      <h2>What it decides vs. what stays human</h2>
+      <table>
+        <tr><th>Below the line (Cortex owns)</th><th>Above the line (human owns)</th></tr>
+        <tr><td>Pull data (read-only tools)</td><td>Post / publish an update</td></tr>
+        <tr><td>Draft the status update</td><td>Commit a ship / GA date</td></tr>
+        <tr><td>Make the R/Y/G call on evidence</td><td>Mark a launch gate</td></tr>
+        <tr><td>Propose stories (queued, ≤10)</td><td>Create / close / merge a ticket</td></tr>
+        <tr><td>Escalate when data is missing</td><td>—</td></tr>
+      </table>
+      <p class="sub">Enforced in <b>infrastructure</b>: there is no publish/merge/commit tool — so it <i>can't</i> cross the line.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Demo · the happy path</div>
+      <h2>A grounded update → critic pass → checkpoint</h2>
+      <div class="two">
+        <div>
+          <ul>
+            <li>Reads project, activity, past updates, roadmap, norms</li>
+            <li><b>Green</b> update grounded in #812/#815, 41% activation</li>
+            <li>3 stories proposed (queued, not created)</li>
+            <li>Critic <span class="good">pass</span> → HITL checkpoint, nothing posted (~$0.007/run)</li>
+          </ul>
+        </div>
+        <div>
+          <img class="shot" src="06-autonomy/ss1-happy-checkpoint.png" alt="happy-path run: grounded update and HITL checkpoint">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M2 · Loop spec</div>
+      <h2>Trigger, done, and stop conditions</h2>
+      <ul>
+        <li><b>Trigger:</b> heartbeat (every 3h, 9am–6pm UK, weekdays) → checks for inbound tasks</li>
+        <li><b>Definition of done:</b> grounded update + proposed stories that pass the critic and reach the human checkpoint</li>
+        <li><b>Stop:</b> critic pass → queue · revisions/iterations exhausted → escalate</li>
+        <li><b>Context:</b> retrieve narrow slices; task brief in long-context</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M3 · Orchestration</div>
+      <h2>Single agent + one independent validator</h2>
+      <pre>heartbeat → CORTEX (draft + propose) → CRITIC (fresh context) → pass → HITL checkpoint
+                                          └ fail → revise (≤2) → escalate</pre>
+      <ul>
+        <li>Critic runs on <b>isolated context</b> — can't inherit the drafter's blind spots.</li>
+        <li>No research/reader fleet — parallelism &amp; context pressure don't apply at this scale.</li>
+        <li>The one split worth its coordination cost: <b>independent validation</b>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M4 · Memory &amp; context</div>
+      <h2>Retrieve the volatile, keep the bounded</h2>
+      <ul>
+        <li><b>Retrieve</b> activity, past updates, roadmap, norms — the narrow, current, shareable slice, fresh each run.</li>
+        <li><b>Long-context</b> only the bounded task brief.</li>
+        <li><b>Near-stateless across runs:</b> working memory is purged; facts are retrieved fresh — little to drift or poison.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M5 · Bounds &amp; safety</div>
+      <h2>Every bound enforced outside the model</h2>
+      <div class="two">
+        <div>
+          <table>
+            <tr><th>Bound</th><th>Value</th></tr>
+            <tr><td>Max iterations</td><td>8 → escalate</td></tr>
+            <tr><td>Revisions</td><td>2 → escalate</td></tr>
+            <tr><td>Cost cap</td><td>$0.50 / run</td></tr>
+            <tr><td>Queue cap</td><td>10 stories</td></tr>
+            <tr><td>Timeout</td><td>90s / run</td></tr>
+            <tr><td>JIT grant</td><td>single-use, gates propose</td></tr>
+            <tr><td>Kill switch</td><td>file; rollback is a no-op</td></tr>
+          </table>
+        </div>
+        <div>
+          <img class="shot" src="06-autonomy/ss5-bound-halt.png" alt="iteration bound halting a runaway">
+          <p class="sub">Bound trip → escalate; nothing posted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M5 · Safety in action</div>
+      <h2>The critic rejects a bad draft; the jailbreak is refused</h2>
+      <div class="two">
+        <div>
+          <img class="shot" src="06-autonomy/ss2-critic-fail-1.png" alt="critic rejecting a draft">
+          <p class="sub">Critic catches a stale-as-current claim → <span class="bad">fail</span> → revise → escalate.</p>
+        </div>
+        <div>
+          <img class="shot" src="06-autonomy/ss4-jailbreak.png" alt="jailbreak refused">
+          <p class="sub">Injection ignored — nothing posted, no roadmap leak, no date committed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M5 · Evals</div>
+      <h2>Grade the path, not just the answer</h2>
+      <ul>
+        <li><b>6 trajectory cases</b> (<code>eval-cases.json</code>): happy, missing-data, jailbreak, grounding-failure recovery, bound-trip, JIT-denial.</li>
+        <li><b><code>evals.py</code></b> runs them and asserts terminal outcome + safety invariants (nothing posted/leaked).</li>
+        <li>Latest run: <span class="good">5 pass</span>, 1 manual. Run the replay set on every change; block a regressing merge.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M6 · What I learned</div>
+      <h2>The best design moves were subtractions</h2>
+      <ul>
+        <li><b>Friction:</b> the <i>validator</i> was harder than the agent — a cheap critic gave inconsistent verdicts; only a stronger critic model made them repeatable.</li>
+        <li><b>Learning:</b> safety lives in <b>infrastructure, not the prompt</b> — a capability the agent doesn't have can't be misused.</li>
+        <li><b>Aha:</b> no publish tool, less critic context, near-stateless memory — each subtraction killed a class of failure. A bounded agent is a <b>more trustworthy</b> agent.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">M6 · Trust Ladder &amp; autonomy</div>
+      <h2>Supervised today — widened on evidence</h2>
+      <ul>
+        <li><b>Current rung: supervised</b> — every run ends at a human checkpoint; nothing posted by construction.</li>
+        <li><b>Per-segment dial:</b> cautious PM stays supervised · high-trust lead could reach bounded-autonomous · exec never does.</li>
+        <li><b>Widen rule (pre-committed):</b> replay set 100% for 4 weeks + &lt;1% edit rate + &lt;1% critic false-positives + zero incidents → dial up one segment. Any incident drops it back.</li>
+      </ul>
+      <div>
+        <span class="tag">shadow</span><span class="tag">assisted</span>
+        <span class="tag" style="background:var(--accent);color:#fff">supervised ← today</span>
+        <span class="tag">bounded-autonomous</span><span class="tag">autonomous</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide title-slide">
+    <div class="inner">
+      <div class="kicker">Where it goes next</div>
+      <h2 style="color:#fff;border-color:#93c5fd">A bounded agent that does real work — and can't do harm</h2>
+      <ul>
+        <li>First new capability: <b>auto-post low-risk updates</b> once a routing eval holds (the first tool that acts — gated).</li>
+        <li>Real connectors (JIRA / Monday / Outlook / Teams) with PII scrubbing.</li>
+        <li>Per-run trace dashboard: escalation rate, critic false-positive rate, cost, injection attempts.</li>
+      </ul>
+      <p class="sub" style="margin-top:1em">github.com/rashahamdan/pm-os-agent-Rasha</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="hint">← / → to navigate · P then ⌘P to print to PDF</div>
+<div class="nav" id="nav">1 / 14</div>
+<div class="footer">Cortex · PM Chief-of-Staff Agent</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  const nav = document.getElementById('nav');
+  function show(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach((s,k)=>s.classList.toggle('active', k===i));
+    nav.textContent = (i+1)+' / '+slides.length;
+    if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  }
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') { show(i+1); e.preventDefault(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp') { show(i-1); e.preventDefault(); }
+    else if(e.key==='Home') show(0);
+    else if(e.key==='End') show(slides.length-1);
+  });
+  document.addEventListener('click', e=>{ if(!e.target.closest('a')) show(i+1); });
+  const start = parseInt((location.hash||'#1').slice(1),10);
+  show(isNaN(start)?0:start-1);
+</script>
+</body>
+</html>
