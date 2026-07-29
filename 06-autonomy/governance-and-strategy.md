@@ -4,14 +4,14 @@
 
 ## Autonomy Dial by segment
 
-Autonomy is a product decision per user, not one global setting.
+Autonomy is a product decision per user, not one global setting. **Cortex ships at `supervised` for every segment today** (every run ends at a human checkpoint — see the Trust Ladder). The "Target" column is where each segment *could* go as trust widens through the eval gate; the dial only moves per-segment, never globally.
 
-| Segment | Desired autonomy | Why |
-|---|---|---|
-| **New / low-context team** | assisted | Cortex drafts, but a human pulls the data and sanity-checks grounding until the fixtures/connectors are trusted |
-| **Cautious PM ("Tesla driver")** | supervised | wants to read and approve every update at the HITL checkpoint before anything leaves the loop |
-| **High-trust team lead ("Waymo passenger")** | bounded-autonomous | happy to let the weekly update assemble and route itself, as long as bounds hold and it escalates edge cases |
-| **Exec / cross-org reader** | never above supervised | blast radius of a wrong or leaked exec update is too high to automate the send |
+| Segment | Today (ships at) | Target as trust widens | Why |
+|---|---|---|---|
+| **New / low-context team** | supervised | assisted | until the fixtures/connectors are trusted, a human checks grounding on every run |
+| **Cautious PM ("Tesla driver")** | supervised | supervised | wants to read and approve every update at the HITL checkpoint — stays supervised by choice |
+| **High-trust team lead ("Waymo passenger")** | supervised | bounded-autonomous | fine letting the weekly update assemble and route itself once bounds + evals prove out |
+| **Exec / cross-org reader** | supervised | never above supervised | blast radius of a wrong or leaked exec update is too high to automate the send |
 
 ## Trust Ladder
 

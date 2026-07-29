@@ -34,6 +34,20 @@ Real screenshots of *your* Cortex running. These are the `00-build/CORTEX-ANATOM
 
 > The `ss*.png` files don't exist yet — capture each with ⌘⇧4 and save it in `06-autonomy/` with the filename above. Until then the images show as broken links; the text transcripts below are the interim evidence.
 
+### Anatomy coverage (the 7 things `CORTEX-ANATOMY.md` requires)
+
+These six screenshots satisfy all seven anatomy items — some images cover more than one:
+
+| Anatomy # | What it must show | Screenshot(s) |
+|---|---|---|
+| 1 | Loop + definition of done | `ss1` / `ss6` (full happy run → checkpoint) |
+| 2 | Tools called (+ deliberately absent post/merge tools) | `ss1` / `ss3` (the `get_*` tool calls in the trace) |
+| 3 | Critic rejects a draft (fail-action + revision cap) | `ss2` (critic `verdict: fail`) |
+| 4 | Iteration bound halts a runaway | `ss5` (`MAX ITERATIONS (2) … Escalating`) |
+| 5 | Cost + commitment bound outside the model | `ss5` (bound trip) + the run-cost line in `ss1` |
+| 6 | HITL checkpoint (queued, never posted) | `ss1` (HITL CHECKPOINT banner) |
+| 7 | Jailbreak refusal (injection refused + escalated) | `ss4` (jailbreak run) |
+
 ## How to run it
 
 _Minimal steps for someone to reproduce the demo (env vars, and the command or the coding-agent prompt you used)._
