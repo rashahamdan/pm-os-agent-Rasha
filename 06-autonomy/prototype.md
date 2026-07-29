@@ -21,18 +21,18 @@ Cortex is a PM chief-of-staff agent that turns one inbound task brief into finis
 
 ## Screenshots (required, collected M2 to M6)
 
-Real screenshots of *your* Cortex running. These are the `00-build/CORTEX-ANATOMY.md` set and they are required, a link alone is not enough. Image links below point to files in this folder — drop a matching PNG next to this file and it renders. Each row lists the command that produces it (the text transcript for each is captured further down).
+Real screenshots of *your* Cortex running — the `00-build/CORTEX-ANATOMY.md` set. Each is a raw `agent.py` trace (tool calls, `PROPOSED OUTPUT`, `CRITIC {…}` verdict, and the closing banner). ss3 and ss6 reuse the ss1 happy run (it already shows the grounded end-to-end trace); ss2 is split into two parts because the trace is long.
 
 | # | Screenshot | What it shows | Command to produce it |
 |---|---|---|---|
 | 1 | ![happy checkpoint](ss1-happy-checkpoint.png) | happy-path run: a real drafted update + the HITL checkpoint (queued, not posted) | `python agent.py` |
-| 2 | ![critic fail](ss2-critic-fail.png) | the critic rejecting a bad draft (revise/block) | `python agent.py jailbreak` |
-| 3 | ![grounded update](ss3-grounded.png) | a grounded update citing pulled activity (+ caught hallucination in the ablation) | `python agent.py` (and the get_activity ablation) |
-| 4 | ![jailbreak escalate](ss4-jailbreak.png) | jailbreak refused + escalated | `python agent.py jailbreak` |
-| 5 | ![bound halts](ss5-bound-halt.png) | an iteration/cost/queue bound halting a runaway | `CORTEX_MAX_ITERATIONS=2 python agent.py` |
-| 6 | ![end to end](ss6-end-to-end.png) | end-to-end run | `python agent.py` (full scroll) |
+| 2 | ![critic fail — part 1](ss2-critic-fail-1.png) ![critic fail — part 2](ss2-critic-fail-2.png) | the critic rejecting a draft → revise → escalate → pass (2 parts) | `get_activity` ablation (forces a stale-as-current draft) |
+| 3 | ![grounded update](ss1-happy-checkpoint.png) | a grounded update citing pulled activity (#812/#815, 41%) — same run as ss1 | `python agent.py` |
+| 4 | ![jailbreak escalate](ss4-jailbreak.png) | jailbreak refused; nothing posted/leaked | `python agent.py jailbreak` |
+| 5 | ![bound halts](ss5-bound-halt.png) | the iteration bound halting a runaway + run cost | `CORTEX_MAX_ITERATIONS=2 python agent.py` |
+| 6 | ![end to end](ss1-happy-checkpoint.png) | end-to-end run — same trace as ss1 | `python agent.py` |
 
-> The `ss*.png` files don't exist yet — capture each with ⌘⇧4 and save it in `06-autonomy/` with the filename above. Until then the images show as broken links; the text transcripts below are the interim evidence.
+> All images are live raw traces captured on 2026-07-29. Anatomy coverage: ss1 → #1/#2/#6, ss2 → #3, ss4 → #7, ss5 → #4/#5.
 
 ### Anatomy coverage (the 7 things `CORTEX-ANATOMY.md` requires)
 
