@@ -110,7 +110,7 @@ All enforced **outside the model**, visible in `agent.py`:
 
 - **Friction:** the *validator* was harder than the agent — a cheap critic gave inconsistent verdicts; only a stronger critic model made them repeatable.
 - **Learning:** safety lives in **infrastructure, not the prompt** — a capability the agent doesn't have can't be misused.
-- **Aha:** the best design moves were **subtractions** (no publish tool, less critic context, near-stateless memory). A bounded agent is a *more trustworthy* agent.
+- **Aha:** the best design moves were **subtractions** (no publish tool, less critic context, near-stateless memory). A bounded agent is *the path to* a more trustworthy agent.
 
 ---
 
