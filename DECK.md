@@ -1,8 +1,10 @@
 # Cortex — PM Chief-of-Staff Agent
 
-*A supervised agent that turns one inbound task into a grounded, leadership-ready status update and a proposed backlog — checked by an independent critic, always stopped at a human checkpoint.*
+**One-line pitch:** A supervised PM chief-of-staff agent that turns one inbound task into a grounded, leadership-ready status update and a capped set of proposed backlog stories — drafted from real project data, checked by an independent critic, and always stopped at a human checkpoint (it has no tool to post, commit, or merge anything).
 
-Rasha Hamdan · Product School "Run Your AI Agent Team" capstone
+**Rasha Hamdan** · Run Your AI Agent Team Cohort · June 2026
+
+**Repo (LMS submission):** github.com/rashahamdan/pm-os-agent-Rasha
 
 ---
 
